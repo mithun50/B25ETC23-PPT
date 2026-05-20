@@ -1,4 +1,4 @@
-# Basic Prompt Writing — Presentation
+# Basic Prompt Writing - Presentation
 
 **Subject:** Introduction to AI (B25ETC23)
 **Topic:** Basic Prompt Writing
@@ -21,8 +21,8 @@
 
 | File | Description |
 |---|---|
-| `index.html` | The presentation — open this in a browser |
-| `content.md` | Speaker notes — 3 slides per person |
+| `index.html` | The presentation - open this in a browser |
+| `content.md` | Speaker notes - 3 slides per person |
 
 ---
 
@@ -60,8 +60,8 @@
 
 The presentation demonstrates how prompt quality affects AI responses using **Electricity** as the test topic.
 
-- **Vague prompt:** "Tell me about electricity." — produced a generic, unstructured, unusable response
-- **Specific prompt:** "Explain how electricity is generated in a thermal power plant and how it reaches homes through the power grid, in simple terms for a high school student." — produced a structured, step-by-step, audience-matched explanation
+- **Vague prompt:** "Tell me about electricity." - produced a generic, unstructured, unusable response
+- **Specific prompt:** "Explain how electricity is generated in a thermal power plant and how it reaches homes through the power grid, in simple terms for a high school student." - produced a structured, step-by-step, audience-matched explanation
 
 The specific prompt outperformed the vague one by **3.4x** across all quality dimensions using the exact same AI model.
 
