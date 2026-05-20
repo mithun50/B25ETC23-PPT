@@ -10,8 +10,8 @@
 /* ── RESET ── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --white:#ffffff;
-  --off:#f7f8fc;
+  --white:rgba(255,255,255,0.8);
+  --off:rgba(247,248,252,0.8);
   --surface:#eef1f8;
   --border:#e2e6f0;
   --ink:#0a0e1a;
@@ -49,10 +49,13 @@ html,body{
 }
 
 /* ── CANVAS ── */
-#cv{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;}
+#cv{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.85;}
 
 /* ── DECK ── */
-#deck{position:fixed;inset:0;z-index:1;overflow:hidden;}
+#deck{
+  position:fixed;inset:0;z-index:1;overflow:hidden;
+  perspective:1600px;perspective-origin:50% 50%;
+}
 
 .slide{
   position:absolute;inset:0;
@@ -61,6 +64,8 @@ html,body{
   padding:52px 80px;
   opacity:0;pointer-events:none;
   will-change:transform,opacity,clip-path;
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
 }
 .slide.active{opacity:1;pointer-events:all;}
 
@@ -71,20 +76,20 @@ html,body{
 .slide.exit-bwd {animation:exitBwd  var(--dur) cubic-bezier(.16,1,.3,1) forwards;pointer-events:none;}
 
 @keyframes enterFwd{
-  from{opacity:0;transform:translateX(80px) scale(.97);filter:blur(4px);}
-  to  {opacity:1;transform:translateX(0)    scale(1);  filter:blur(0);}
+  from{opacity:0;transform:rotateY(35deg) translateZ(-300px) translateX(200px);filter:blur(3px);}
+  to  {opacity:1;transform:rotateY(0deg) translateZ(0) translateX(0);filter:blur(0);}
 }
 @keyframes enterBwd{
-  from{opacity:0;transform:translateX(-80px) scale(.97);filter:blur(4px);}
-  to  {opacity:1;transform:translateX(0)    scale(1);  filter:blur(0);}
+  from{opacity:0;transform:rotateY(-35deg) translateZ(-300px) translateX(-200px);filter:blur(3px);}
+  to  {opacity:1;transform:rotateY(0deg) translateZ(0) translateX(0);filter:blur(0);}
 }
 @keyframes exitFwd{
-  from{opacity:1;transform:translateX(0)     scale(1);  filter:blur(0);}
-  to  {opacity:0;transform:translateX(-80px) scale(.97);filter:blur(4px);}
+  from{opacity:1;transform:rotateY(0deg) translateZ(0) translateX(0);filter:blur(0);}
+  to  {opacity:0;transform:rotateY(-35deg) translateZ(-300px) translateX(-200px);filter:blur(3px);}
 }
 @keyframes exitBwd{
-  from{opacity:1;transform:translateX(0)   scale(1);  filter:blur(0);}
-  to  {opacity:0;transform:translateX(80px) scale(.97);filter:blur(4px);}
+  from{opacity:1;transform:rotateY(0deg) translateZ(0) translateX(0);filter:blur(0);}
+  to  {opacity:0;transform:rotateY(35deg) translateZ(-300px) translateX(200px);filter:blur(3px);}
 }
 
 /* ── STAGGER REVEALS ── */
@@ -146,7 +151,7 @@ html,body{
 
 /* ─────────────────────────── SLIDE 1 ─────────────────────────── */
 #s1{
-  background:linear-gradient(135deg,#f0f4ff 0%,#ffffff 45%,#f5f0ff 100%);
+  background:linear-gradient(135deg,rgba(240,244,255,0.8) 0%,var(--white) 45%,rgba(245,240,255,0.8) 100%);
   text-align:center;align-items:center;gap:0;
   position:relative;overflow:hidden;
 }
@@ -531,7 +536,7 @@ html,body{
 
 /* ─────────────────────────── SLIDE 12 ─────────────────────────── */
 #s12{
-  background:linear-gradient(135deg,#f0f4ff 0%,#ffffff 40%,#f5f0ff 100%);
+  background:linear-gradient(135deg,rgba(240,244,255,0.8) 0%,var(--white) 40%,rgba(245,240,255,0.8) 100%);
   position:absolute;inset:0;overflow:hidden;
   display:flex;flex-direction:row;align-items:stretch;
   padding:0;
@@ -664,11 +669,268 @@ html,body{
   0%,100%{r:6;opacity:.9;}
   50%{r:9;opacity:.5;}
 }
+
+/* ── CYBER ROBOTIC EFFECTS ── */
+#scanner{
+  position:fixed;
+  left:0;
+  width:100%;
+  height:3px;
+  background:linear-gradient(90deg,transparent 0%,var(--blue) 25%,var(--cyan) 50%,var(--violet) 75%,transparent 100%);
+  opacity:0;
+  z-index:450;
+  pointer-events:none;
+  box-shadow:0 0 10px rgba(37,99,235,0.5),0 0 20px rgba(8,145,178,0.3);
+  animation:cyberScan 12s cubic-bezier(.4,0,.2,1) infinite;
+}
+@keyframes cyberScan{
+  0%{top:-2%;opacity:0;}
+  2%{opacity:.4;}
+  98%{opacity:.4;}
+  100%{top:102%;opacity:0;}
+}
+
+/* Corner Telemetry HUD */
+.hud-element{
+  position:fixed;
+  z-index:450;
+  pointer-events:none;
+  font-family:var(--font-mono);
+  font-size:.52rem;
+  color:var(--ink3);
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  opacity:.65;
+  transition:opacity .3s;
+}
+.hud-element:hover{
+  opacity:1;
+}
+.hud-tl{
+  top:24px;
+  left:220px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.hud-tr{
+  top:24px;
+  right:160px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-align:right;
+}
+.hud-bl{
+  bottom:28px;
+  left:36px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.hud-br{
+  bottom:28px;
+  right:36px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.hud-bracket{
+  display:inline-block;
+  width:6px;
+  height:8px;
+  border:1.2px solid var(--cyan);
+}
+.hud-tl .hud-bracket{border-right:none;border-bottom:none;}
+.hud-tr .hud-bracket{border-left:none;border-bottom:none;}
+.hud-bl .hud-bracket{border-right:none;border-top:none;}
+.hud-br .hud-bracket{border-left:none;border-top:none;}
+
+.hud-pulse{
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  animation:hudPulse 1.5s infinite;
+}
+@keyframes hudPulse{
+  0%,100%{opacity:.3;transform:scale(1);}
+  50%{opacity:1;transform:scale(1.3);}
+}
+
+/* Cybernetic Targeting Reticle */
+.cyber-cursor{
+  position:fixed;
+  width:36px;
+  height:36px;
+  border:1px solid rgba(8,145,178,.45);
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .2s,height .2s,border-color .2s,background .2s;
+  mix-blend-mode:difference;
+  display:none;
+}
+.cyber-cursor::before{
+  content:'';
+  position:absolute;
+  top:50%;left:50%;
+  width:4px;height:4px;
+  background:var(--cyan);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+}
+.cyber-cursor::after{
+  content:'';
+  position:absolute;
+  inset:-4px;
+  border:1px dashed rgba(124,58,237,.35);
+  border-radius:50%;
+  animation:spin 12s linear infinite;
+}
+/* Cyber Reticle Coordinates label */
+.cyber-coords{
+  position:absolute;
+  left:44px;
+  top:12px;
+  font-family:var(--font-mono);
+  font-size:.5rem;
+  color:var(--cyan);
+  letter-spacing:.05em;
+  pointer-events:none;
+  white-space:nowrap;
+  background:rgba(255,255,255,.75);
+  padding:2px 6px;
+  border-radius:3px;
+  border:1.2px solid rgba(8,145,178,.2);
+  backdrop-filter:blur(3px);
+  opacity:0;
+  transition:opacity .3s;
+}
+.cyber-cursor.hovering .cyber-coords{
+  opacity:.85;
+}
+.cyber-cursor.hovering{
+  width:48px;
+  height:48px;
+  border-color:var(--violet);
+  background:rgba(124,58,237,.03);
+}
+
+/* Holographic Card Sweep Borders */
+.slide.active .card::after, 
+.slide.active .chat-win::after, 
+.slide.active .cmp-col::after, 
+.slide.active .assign-panel::after,
+.slide.active .why-card::after{
+  content:'';
+  position:absolute;
+  inset:-1px;
+  border-radius:var(--radius);
+  pointer-events:none;
+  box-shadow:0 0 0 2px var(--blue);
+  opacity:0;
+  animation:borderScan 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+@keyframes borderScan{
+  0%{opacity:1;transform:scale(1.01);box-shadow:0 0 8px var(--blue),inset 0 0 4px var(--blue);}
+  50%{opacity:.5;transform:scale(1.005);box-shadow:0 0 4px var(--cyan),inset 0 0 2px var(--cyan);}
+  100%{opacity:0;transform:scale(1);box-shadow:none;}
+}
+
+/* Voice spectrum visualizer HUD */
+.ai-wave{
+  display:flex;
+  align-items:center;
+  gap:3px;
+  height:14px;
+  margin-left:6px;
+  margin-right:6px;
+}
+.ai-wave .bar{
+  width:2px;
+  height:6px;
+  border-radius:10px;
+  background:linear-gradient(180deg,var(--blue),var(--violet));
+  animation:aiPulse 1.2s ease-in-out infinite;
+}
+.ai-wave .bar:nth-child(2){animation-delay:.15s;height:10px;}
+.ai-wave .bar:nth-child(3){animation-delay:.3s;height:14px;background:linear-gradient(180deg,var(--violet),var(--cyan));}
+.ai-wave .bar:nth-child(4){animation-delay:.45s;height:8px;}
+.ai-wave .bar:nth-child(5){animation-delay:.6s;height:4px;}
+@keyframes aiPulse{
+  0%,100%{transform:scaleY(1);opacity:.5;}
+  50%{transform:scaleY(1.8);opacity:1;}
+}
+
+/* Decypher Glitch Title Effect */
+.slide.active .h1, .slide.active .h2{
+  animation:decypherGlitch 1.2s ease-out forwards;
+  position:relative;
+}
+@keyframes decypherGlitch{
+  0%{
+    text-shadow:.05em 0 0 rgba(37,99,235,.75),-.025em -.05em 0 rgba(124,58,237,.75),.025em .05em 0 rgba(8,145,178,.75);
+    opacity:.85;
+    filter:contrast(1.2);
+  }
+  15%{
+    text-shadow:-.05em -.025em 0 rgba(37,99,235,.75),.025em .025em 0 rgba(124,58,237,.75),-.05em -.05em 0 rgba(8,145,178,.75);
+    opacity:.95;
+  }
+  30%{
+    text-shadow:.025em .05em 0 rgba(37,99,235,.75),-.05em -.025em 0 rgba(124,58,237,.75),.025em -.025em 0 rgba(8,145,178,.75);
+    opacity:.9;
+  }
+  45%{
+    text-shadow:-.025em -.025em 0 rgba(37,99,235,.75),-.025em .05em 0 rgba(124,58,237,.75),-.025em -.05em 0 rgba(8,145,178,.75);
+    opacity:1;
+  }
+  60%{
+    text-shadow:.025em 0 0 rgba(37,99,235,.4),0 -.025em 0 rgba(124,58,237,.4),-.025em 0 0 rgba(8,145,178,.4);
+  }
+  80%{
+    text-shadow:0 0 0 rgba(37,99,235,0),0 0 0 rgba(124,58,237,0),0 0 0 rgba(8,145,178,0);
+  }
+  100%{
+    text-shadow:none;
+    opacity:1;
+  }
+}
 </style>
 </head>
 <body>
 
 <canvas id="cv"></canvas>
+
+<!-- ── ROBOTIC / AI EFFECTS HUD ── -->
+<div id="scanner"></div>
+
+<div class="hud-element hud-tl">
+  <span class="hud-bracket"></span>
+  <span>SYS.ID // PRMP-ENG-VOL1</span>
+</div>
+<div class="hud-element hud-tr">
+  <span>COGNITIVE PROCESSOR // ONLINE</span>
+  <span class="hud-bracket"></span>
+</div>
+<div class="hud-element hud-bl">
+  <span class="hud-bracket"></span>
+  <span class="hud-pulse"></span>
+  <span>NEURAL LINK // ACTIVE</span>
+</div>
+<div class="hud-element hud-br">
+  <span>CORE STATUS // STABLE</span>
+  <span class="hud-pulse"></span>
+  <span class="hud-bracket"></span>
+</div>
+
+<!-- Targeting reticle -->
+<div class="cyber-cursor" id="cyber-cursor">
+  <div class="cyber-coords" id="cyber-coords">X: 0000 // Y: 0000</div>
+</div>
 <div id="pbar"></div>
 <div id="badge">B25ETC23 / INTRO TO AI</div>
 <div id="dots-nav"></div>
@@ -681,6 +943,60 @@ html,body{
   <div class="s1-orb orb1"></div>
   <div class="s1-orb orb2"></div>
   <div class="s1-orb orb3"></div>
+  <!-- balanced animated AI neural net SVG in the top-left corner -->
+  <div style="position:absolute;top:0;left:0;width:380px;height:280px;opacity:.5;pointer-events:none;transform:scaleX(-1) scaleY(-1);">
+    <svg width="380" height="280" viewBox="0 0 380 280">
+      <defs>
+        <radialGradient id="ng2" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#7c3aed" stop-opacity=".6"/>
+          <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <!-- edges -->
+      <g stroke="#7c3aed" stroke-width=".8" stroke-dasharray="4 4" opacity=".35">
+        <line x1="60" y1="80" x2="150" y2="60"/><line x1="60" y1="80" x2="150" y2="120"/>
+        <line x1="60" y1="160" x2="150" y2="120"/><line x1="60" y1="160" x2="150" y2="180"/>
+        <line x1="60" y1="240" x2="150" y2="180"/><line x1="60" y1="240" x2="150" y2="240"/>
+        <line x1="150" y1="60" x2="240" y2="40"/><line x1="150" y1="60" x2="240" y2="100"/>
+        <line x1="150" y1="120" x2="240" y2="100"/><line x1="150" y1="120" x2="240" y2="160"/>
+        <line x1="150" y1="180" x2="240" y2="160"/><line x1="150" y1="180" x2="240" y2="220"/>
+        <line x1="150" y1="240" x2="240" y2="220"/><line x1="150" y1="240" x2="240" y2="260"/>
+        <line x1="240" y1="40" x2="330" y2="80"/><line x1="240" y1="100" x2="330" y2="80"/>
+        <line x1="240" y1="100" x2="330" y2="160"/><line x1="240" y1="160" x2="330" y2="160"/>
+        <line x1="240" y1="160" x2="330" y2="220"/><line x1="240" y1="220" x2="330" y2="220"/>
+        <line x1="240" y1="260" x2="330" y2="220"/>
+      </g>
+      <!-- animated flow lines -->
+      <g stroke="#2563eb" stroke-width="1.5" stroke-dasharray="8 12" opacity=".6">
+        <line x1="60" y1="80" x2="330" y2="80"><animate attributeName="stroke-dashoffset" values="0;-40" dur="1.5s" repeatCount="indefinite"/></line>
+        <line x1="60" y1="160" x2="330" y2="160"><animate attributeName="stroke-dashoffset" values="0;-40" dur="2s" repeatCount="indefinite"/></line>
+        <line x1="60" y1="240" x2="330" y2="220"><animate attributeName="stroke-dashoffset" values="0;-40" dur="1.8s" repeatCount="indefinite"/></line>
+      </g>
+      <!-- nodes layer 1 -->
+      <g fill="#7c3aed" opacity=".8">
+        <circle cx="60" cy="80" r="6"><animate attributeName="r" values="5;8;5" dur="2.2s" repeatCount="indefinite"/></circle>
+        <circle cx="60" cy="160" r="6"><animate attributeName="r" values="5;8;5" dur="2.8s" repeatCount="indefinite"/></circle>
+        <circle cx="60" cy="240" r="5"><animate attributeName="r" values="4;7;4" dur="2.4s" repeatCount="indefinite"/></circle>
+      </g>
+      <!-- nodes layer 2 -->
+      <g fill="#2563eb" opacity=".7">
+        <circle cx="150" cy="60" r="6"/><circle cx="150" cy="120" r="6"/>
+        <circle cx="150" cy="180" r="6"/><circle cx="150" cy="240" r="5"/>
+      </g>
+      <!-- nodes layer 3 -->
+      <g fill="#0891b2" opacity=".7">
+        <circle cx="240" cy="40" r="5"/><circle cx="240" cy="100" r="6"/>
+        <circle cx="240" cy="160" r="6"/><circle cx="240" cy="220" r="6"/>
+        <circle cx="240" cy="260" r="4"/>
+      </g>
+      <!-- output nodes -->
+      <g fill="#059669" opacity=".8">
+        <circle cx="330" cy="80" r="7"><animate attributeName="r" values="6;9;6" dur="1.8s" repeatCount="indefinite"/></circle>
+        <circle cx="330" cy="160" r="7"><animate attributeName="r" values="6;9;6" dur="2.2s" repeatCount="indefinite"/></circle>
+        <circle cx="330" cy="220" r="6"><animate attributeName="r" values="5;8;5" dur="2s" repeatCount="indefinite"/></circle>
+      </g>
+    </svg>
+  </div>
   <div class="corner-tag">INTRODUCTION TO AI &bull; MAY 2026</div>
 
   <div class="s1-top-row r d1">
@@ -1089,7 +1405,7 @@ html,body{
     <div class="cmp-col">
       <div class="cmp-head ch-bad">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-        VAGUE &mdash; "Tell me about electricity."
+        VAGUE - "Tell me about electricity."
       </div>
       <div class="cmp-body">
         <div class="cmp-row"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" style="flex-shrink:0;margin-top:2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Generic overview with no structure or logical flow</div>
@@ -1108,7 +1424,7 @@ html,body{
     <div class="cmp-col">
       <div class="cmp-head ch-good">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        SPECIFIC &mdash; "Explain thermal generation for a high school student..."
+        SPECIFIC - "Explain thermal generation for a high school student..."
       </div>
       <div class="cmp-body">
         <div class="cmp-row"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" style="flex-shrink:0;margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg>Structured 6-step explanation with logical sequence</div>
@@ -1365,13 +1681,21 @@ html,body{
         <circle cx="250" cy="250" r="80" stroke="#0891b2" stroke-dasharray="3 8"><animateTransform attributeName="transform" type="rotate" from="0 250 250" to="360 250 250" dur="14s" repeatCount="indefinite"/></circle>
       </g>
     </svg>
+    <!-- balanced SVG decoration on top-left side -->
+    <svg style="position:absolute;top:-60px;left:-60px;opacity:.1;width:460px;height:460px;" viewBox="0 0 500 500">
+      <g stroke="#7c3aed" stroke-width="1" fill="none">
+        <circle cx="250" cy="250" r="180" stroke-dasharray="8 12"><animateTransform attributeName="transform" type="rotate" from="360 250 250" to="0 250 250" dur="30s" repeatCount="indefinite"/></circle>
+        <circle cx="250" cy="250" r="130" stroke="#2563eb" stroke-dasharray="5 10"><animateTransform attributeName="transform" type="rotate" from="0 250 250" to="360 250 250" dur="20s" repeatCount="indefinite"/></circle>
+        <circle cx="250" cy="250" r="80" stroke="#0891b2" stroke-dasharray="3 8"><animateTransform attributeName="transform" type="rotate" from="360 250 250" to="0 250 250" dur="14s" repeatCount="indefinite"/></circle>
+      </g>
+    </svg>
     <div class="s1-orb" style="width:300px;height:300px;background:rgba(37,99,235,.06);top:-80px;left:-60px;"></div>
     <div class="s1-orb" style="width:240px;height:240px;background:rgba(124,58,237,.05);bottom:-50px;right:-40px;animation-delay:4s;"></div>
   </div>
 
   <!-- LEFT col -->
   <div class="ty-left">
-    <div class="ty-kicker r d1">B25ETC23 &mdash; INTRODUCTION TO AI &mdash; MAY 2026</div>
+    <div class="ty-kicker r d1">B25ETC23 - INTRODUCTION TO AI - MAY 2026</div>
     <div class="ty-word r d2">Thank<br>You.</div>
     <div class="ty-sub r d3">Questions &amp; Open Discussion</div>
     <div class="ty-team r d4">
@@ -1436,6 +1760,14 @@ html,body{
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg>
   </button>
   <div class="nav-sep"></div>
+  <div class="ai-wave" title="AI Cognitive Engine Active">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+  <div class="nav-sep"></div>
   <button id="btn-fs" title="Toggle Fullscreen (F)">
     <!-- enter fullscreen icon -->
     <svg id="fs-icon-enter" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="display:block;">
@@ -1460,6 +1792,126 @@ resize(); addEventListener('resize', resize);
 
 /* Color palette (white theme - subtle) */
 const COLORS = ['#2563eb','#7c3aed','#0891b2','#059669','#ea580c'];
+
+/* ── Blurred pattern shapes ── */
+class PatternBlob {
+  constructor() {
+    this.x = Math.random() * innerWidth;
+    this.y = Math.random() * innerHeight;
+    this.r = Math.random() * 180 + 100;
+    this.vx = (Math.random() - .5) * .18;
+    this.vy = (Math.random() - .5) * .18;
+    this.c = COLORS[Math.floor(Math.random() * COLORS.length)];
+    this.alpha = Math.random() * .12 + .06;
+    this.sides = [3, 4, 5, 6, 8][Math.floor(Math.random() * 5)];
+    this.rot = Math.random() * Math.PI * 2;
+    this.rotSpeed = (Math.random() - .5) * .003;
+  }
+  step() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.rot += this.rotSpeed;
+    if (this.x < -this.r * 2) this.x = W + this.r;
+    if (this.x > W + this.r * 2) this.x = -this.r;
+    if (this.y < -this.r * 2) this.y = H + this.r;
+    if (this.y > H + this.r * 2) this.y = -this.r;
+  }
+  draw() {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rot);
+    ctx.globalAlpha = this.alpha;
+    ctx.fillStyle = this.c;
+    ctx.shadowColor = this.c;
+    ctx.shadowBlur = 80;
+    ctx.beginPath();
+    for (let i = 0; i < this.sides; i++) {
+      const a = (Math.PI * 2 / this.sides) * i - Math.PI / 2;
+      const px = Math.cos(a) * this.r;
+      const py = Math.sin(a) * this.r;
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.fill();  /* double pass for stronger blur */
+    ctx.restore();
+  }
+}
+
+/* Dot pattern overlay */
+function drawDotPattern() {
+  ctx.save();
+  ctx.globalAlpha = .035;
+  ctx.fillStyle = '#2563eb';
+  const gap = 28;
+  const dotR = 1;
+  for (let x = gap; x < W; x += gap) {
+    for (let y = gap; y < H; y += gap) {
+      ctx.beginPath();
+      ctx.arc(x, y, dotR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+/* Horizontal scan lines */
+function drawScanLines() {
+  ctx.save();
+  ctx.globalAlpha = .018;
+  ctx.strokeStyle = '#7c3aed';
+  ctx.lineWidth = 1;
+  for (let y = 0; y < H; y += 6) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(W, y);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+/* Large blurred gradient orbs */
+class GlowOrb {
+  constructor() {
+    this.reset();
+  }
+  reset() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.r = Math.random() * 300 + 200;
+    this.vx = (Math.random() - .5) * .12;
+    this.vy = (Math.random() - .5) * .12;
+    this.c = COLORS[Math.floor(Math.random() * COLORS.length)];
+    this.alpha = Math.random() * .14 + .06;
+    this.pulse = Math.random() * Math.PI * 2;
+    this.pulseSpeed = Math.random() * .008 + .003;
+  }
+  step() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.pulse += this.pulseSpeed;
+    if (this.x < -this.r) this.x = W + this.r;
+    if (this.x > W + this.r) this.x = -this.r;
+    if (this.y < -this.r) this.y = H + this.r;
+    if (this.y > H + this.r) this.y = -this.r;
+  }
+  draw() {
+    const pulsing = this.alpha + Math.sin(this.pulse) * .012;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, pulsing);
+    const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r);
+    grad.addColorStop(0, this.c);
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+const blobs = Array.from({ length: 8 }, () => new PatternBlob());
+const orbs = Array.from({ length: 5 }, () => new GlowOrb());
 
 class Node {
   constructor() { this.reset(true); }
@@ -1500,6 +1952,33 @@ function drawGrid() {
   ctx.restore();
 }
 
+/* Mouse tracking state */
+let mouse = { x: null, y: null, active: false };
+addEventListener('mousemove', e => {
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
+  mouse.active = true;
+});
+addEventListener('mouseleave', () => {
+  mouse.active = false;
+});
+
+/* Spotlight Hover Glow */
+function drawMouseGlow() {
+  if (!mouse.active || mouse.x === null) return;
+  ctx.save();
+  ctx.globalAlpha = 0.15;
+  const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 220);
+  grad.addColorStop(0, '#7c3aed');
+  grad.addColorStop(0.5, '#2563eb');
+  grad.addColorStop(1, 'transparent');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(mouse.x, mouse.y, 220, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
 /* Edges */
 function drawEdges() {
   for (let i = 0; i < nodes.length; i++) {
@@ -1512,6 +1991,25 @@ function drawEdges() {
         ctx.strokeStyle = nodes[i].c;
         ctx.lineWidth = .7;
         ctx.beginPath(); ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y); ctx.stroke();
+        ctx.restore();
+      }
+    }
+    // Connect node to mouse if active and close
+    if (mouse.active && mouse.x !== null) {
+      const dx = nodes[i].x - mouse.x;
+      const dy = nodes[i].y - mouse.y;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < 180) {
+        ctx.save();
+        ctx.globalAlpha = (1 - d / 180) * .18;
+        ctx.strokeStyle = nodes[i].c;
+        ctx.lineWidth = 1.0;
+        ctx.shadowColor = nodes[i].c;
+        ctx.shadowBlur = 4;
+        ctx.beginPath(); 
+        ctx.moveTo(nodes[i].x, nodes[i].y); 
+        ctx.lineTo(mouse.x, mouse.y); 
+        ctx.stroke();
         ctx.restore();
       }
     }
@@ -1546,6 +2044,9 @@ function drawBolt(x1, y1, x2, y2, rough, depth, col) {
 
 function frame() {
   ctx.clearRect(0, 0, W, H);
+  orbs.forEach(o => { o.step(); o.draw(); });
+  blobs.forEach(b => { b.step(); b.draw(); });
+  drawMouseGlow();
   drawGrid();
   drawEdges();
   nodes.forEach(n => { n.step(); n.draw(); });
@@ -1591,6 +2092,11 @@ function onLeave(n) {
     document.querySelectorAll('.tl-item').forEach(el => el.classList.remove('on'));
     document.querySelectorAll('.avb-fill').forEach(b => b.style.width = '0');
   }
+  /* reset 3D parallax elements */
+  document.querySelectorAll('.r, .card, .chat-win, .cmp-col, .assign-panel, .why-card').forEach(el => {
+    el.style.transform = '';
+    el.style.transition = '';
+  });
 }
 
 function onEnter(n) {
@@ -1702,6 +2208,58 @@ document.getElementById('btn-fs').addEventListener('click', toggleFS);
 
 /* wire dot clicks */
 dotsWrap.querySelectorAll('.dnav-dot').forEach((d, i) => { d.onclick = () => go(i); });
+
+/* ── MOUSE PARALLAX / 3D TILT EFFECT ── */
+addEventListener('mousemove', e => {
+  if (busy) return;
+  const activeSlide = document.querySelector('.slide.active');
+  if (!activeSlide) return;
+  
+  // Calculate offsets from screen center (-0.5 to 0.5)
+  const ax = (e.clientX - innerWidth / 2) / innerWidth;
+  const ay = (e.clientY - innerHeight / 2) / innerHeight;
+  
+  // Subtle rotation Y and X (max 10 degrees)
+  const ry = ax * 14;
+  const rx = -ay * 14;
+  
+  // Rotate slide cards, panels, and reveal text segments in 3D space
+  const targets = activeSlide.querySelectorAll('.r, .card, .chat-win, .cmp-col, .assign-panel, .why-card');
+  targets.forEach(el => {
+    el.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg) translateZ(10px)`;
+    el.style.transition = 'transform 0.12s cubic-bezier(0.25, 0.8, 0.25, 1)';
+  });
+});
+
+/* ── CYBER CURSOR RETICLE TRACKER ── */
+const cyberCursor = document.getElementById('cyber-cursor');
+const cyberCoords = document.getElementById('cyber-coords');
+if (cyberCursor && cyberCoords) {
+  let frameId = null;
+  addEventListener('mousemove', e => {
+    if (frameId) cancelAnimationFrame(frameId);
+    frameId = requestAnimationFrame(() => {
+      if (cyberCursor.style.display !== 'block') {
+        cyberCursor.style.display = 'block';
+      }
+      cyberCursor.style.left = e.clientX + 'px';
+      cyberCursor.style.top = e.clientY + 'px';
+      
+      const xStr = String(e.clientX).padStart(4, '0');
+      const yStr = String(e.clientY).padStart(4, '0');
+      cyberCoords.textContent = 'TARGET X: ' + xStr + ' // Y: ' + yStr;
+      
+      // Check hover targets
+      const isHovering = e.target.closest('a, button, .nbtn, #btn-fs, .dnav-dot, .card, .chat-win, .cmp-col, .assign-panel, .why-card, .member-card, .pill, .tag, .tl-item');
+      cyberCursor.classList.toggle('hovering', !!isHovering);
+    });
+  });
+  
+  // Hide if cursor leaves window
+  document.addEventListener('mouseleave', () => {
+    cyberCursor.style.display = 'none';
+  });
+}
 
 /* init */
 ui();
