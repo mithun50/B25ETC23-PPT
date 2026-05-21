@@ -174,21 +174,43 @@ html,body{
   font-size:1.15rem;color:var(--ink2);font-weight:400;letter-spacing:.04em;
   margin-bottom:44px;
 }
-.team-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:36px;}
+.team-row{
+  display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:36px;
+  padding-top:20px;position:relative;
+}
+.team-row::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:180px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(37,99,235,.3),rgba(124,58,237,.3),transparent);
+}
 .member-card{
   display:flex;align-items:center;gap:10px;
   padding:11px 20px;border-radius:100px;
-  background:var(--white);border:1px solid var(--border);box-shadow:var(--shadow);
-  font-size:.82rem;font-weight:500;color:var(--ink2);
-  transition:all .25s;cursor:default;
+  background:linear-gradient(135deg,rgba(37,99,235,.08),rgba(124,58,237,.07));
+  border:1px solid rgba(37,99,235,.22);
+  box-shadow:0 4px 18px rgba(37,99,235,.1),inset 0 1px 0 rgba(255,255,255,.6);
+  font-size:.82rem;font-weight:500;color:var(--ink);
+  transition:all .28s;cursor:default;backdrop-filter:blur(6px);
 }
-.member-card:hover{border-color:rgba(37,99,235,.3);color:var(--blue);box-shadow:0 8px 24px rgba(37,99,235,.12);}
+.member-card:hover{
+  border-color:rgba(124,58,237,.45);
+  background:linear-gradient(135deg,rgba(37,99,235,.14),rgba(124,58,237,.12));
+  box-shadow:0 8px 28px rgba(37,99,235,.18),0 0 0 1px rgba(124,58,237,.2),inset 0 1px 0 rgba(255,255,255,.7);
+  transform:translateY(-2px);
+}
 .member-av{
   width:28px;height:28px;border-radius:50%;
   background:linear-gradient(135deg,var(--blue),var(--violet));
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 0 8px rgba(37,99,235,.4);
 }
-.s1-date{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.22em;color:var(--ink3);}
+.s1-date{
+  font-family:var(--font-mono);font-size:.62rem;letter-spacing:.22em;color:var(--ink3);
+  padding:6px 18px;border-radius:100px;
+  background:linear-gradient(135deg,rgba(37,99,235,.06),rgba(124,58,237,.05));
+  border:1px solid rgba(37,99,235,.15);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+}
 .corner-tag{
   position:absolute;top:24px;right:36px;
   font-family:var(--font-mono);font-size:.55rem;letter-spacing:.2em;
@@ -671,24 +693,6 @@ html,body{
 }
 
 /* ── CYBER ROBOTIC EFFECTS ── */
-#scanner{
-  position:fixed;
-  left:0;
-  width:100%;
-  height:3px;
-  background:linear-gradient(90deg,transparent 0%,var(--blue) 25%,var(--cyan) 50%,var(--violet) 75%,transparent 100%);
-  opacity:0;
-  z-index:450;
-  pointer-events:none;
-  box-shadow:0 0 10px rgba(37,99,235,0.5),0 0 20px rgba(8,145,178,0.3);
-  animation:cyberScan 12s cubic-bezier(.4,0,.2,1) infinite;
-}
-@keyframes cyberScan{
-  0%{top:-2%;opacity:0;}
-  2%{opacity:.4;}
-  98%{opacity:.4;}
-  100%{top:102%;opacity:0;}
-}
 
 /* Corner Telemetry HUD */
 .hud-element{
@@ -906,7 +910,6 @@ html,body{
 <canvas id="cv"></canvas>
 
 <!-- ── ROBOTIC / AI EFFECTS HUD ── -->
-<div id="scanner"></div>
 
 <div class="hud-element hud-tl">
   <span class="hud-bracket"></span>
@@ -1882,7 +1885,7 @@ class GlowOrb {
     this.vx = (Math.random() - .5) * .12;
     this.vy = (Math.random() - .5) * .12;
     this.c = COLORS[Math.floor(Math.random() * COLORS.length)];
-    this.alpha = Math.random() * .14 + .06;
+    this.alpha = Math.random() * .20 + .10;
     this.pulse = Math.random() * Math.PI * 2;
     this.pulseSpeed = Math.random() * .008 + .003;
   }
@@ -1946,7 +1949,7 @@ function drawGrid() {
   ctx.save();
   ctx.strokeStyle = '#2563eb';
   ctx.lineWidth = .6;
-  ctx.globalAlpha = .04;
+  ctx.globalAlpha = .07;
   for (let x = 0; x < W; x += 70) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
   for (let y = 0; y < H; y += 70) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
   ctx.restore();
@@ -2016,29 +2019,53 @@ function drawEdges() {
   }
 }
 
-/* Animated lightning bolt (subtle white-theme version) */
-let bolt = { active: false, x1:0, y1:0, x2:0, y2:0, alpha:0, col:'' };
+/* Animated lightning bolts - multi-bolt system */
+const bolts = [];
+const BOLT_ORIGINS = [
+  () => ({ x1: Math.random() * W,        y1: 0,                             x2dir:  1 }),  // top
+  () => ({ x1: 0,                         y1: Math.random() * H * .6,        x2dir:  1 }),  // left
+  () => ({ x1: W,                         y1: Math.random() * H * .6,        x2dir: -1 }),  // right
+  () => ({ x1: Math.random() * W * .4,    y1: 0,                             x2dir:  1 }),  // top-left
+  () => ({ x1: W * .6 + Math.random() * W * .4, y1: 0,                      x2dir: -1 }),  // top-right
+];
+
 function fireBolt() {
-  bolt.x1 = Math.random() * W; bolt.y1 = 0;
-  bolt.x2 = bolt.x1 + (Math.random() - .5) * 280;
-  bolt.y2 = H * .3 + Math.random() * H * .35;
-  bolt.alpha = .55; bolt.active = true;
-  bolt.col = COLORS[Math.floor(Math.random() * COLORS.length)];
+  const count = 1 + (Math.random() < .45 ? 1 : 0); // sometimes fire 2 at once
+  for (let k = 0; k < count; k++) {
+    const origin = BOLT_ORIGINS[Math.floor(Math.random() * BOLT_ORIGINS.length)]();
+    const spread = 220 + Math.random() * 200;
+    bolts.push({
+      active: true,
+      x1: origin.x1,
+      y1: origin.y1,
+      x2: origin.x1 + origin.x2dir * (Math.random() - .3) * spread,
+      y2: H * .25 + Math.random() * H * .5,
+      alpha: .85 + Math.random() * .15,
+      col: COLORS[Math.floor(Math.random() * COLORS.length)]
+    });
+  }
+  // chain a second strike after a short gap ~15% of the time
+  if (Math.random() < .15) setTimeout(fireBolt, 180 + Math.random() * 120);
 }
-setInterval(fireBolt, 5000 + Math.random() * 4000);
+
+function scheduleBolt() {
+  fireBolt();
+  setTimeout(scheduleBolt, 1200 + Math.random() * 600); // ~1.5s average
+}
+scheduleBolt();
 
 function drawBolt(x1, y1, x2, y2, rough, depth, col) {
   if (depth <= 0) return;
   const mx = (x1 + x2) / 2 + (Math.random() - .5) * rough;
   const my = (y1 + y2) / 2 + (Math.random() - .5) * rough;
   ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(mx, my);
-  ctx.strokeStyle = col; ctx.lineWidth = depth * .4;
-  ctx.shadowColor = col; ctx.shadowBlur = 10; ctx.stroke();
+  ctx.strokeStyle = col; ctx.lineWidth = depth * .5;
+  ctx.shadowColor = col; ctx.shadowBlur = 16; ctx.stroke();
   ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(x2, y2); ctx.stroke();
   drawBolt(x1, y1, mx, my, rough * .6, depth - 1, col);
   drawBolt(mx, my, x2, y2, rough * .6, depth - 1, col);
-  if (Math.random() < .25 && depth > 2) {
-    drawBolt(mx, my, mx + (Math.random() - .5) * 90, my + Math.random() * 70, rough * .5, depth - 2, col);
+  if (Math.random() < .42 && depth > 2) {
+    drawBolt(mx, my, mx + (Math.random() - .5) * 130, my + Math.random() * 110, rough * .55, depth - 2, col);
   }
 }
 
@@ -2050,12 +2077,15 @@ function frame() {
   drawGrid();
   drawEdges();
   nodes.forEach(n => { n.step(); n.draw(); });
-  if (bolt.active && bolt.alpha > 0) {
-    ctx.save(); ctx.globalAlpha = bolt.alpha * .55;
-    drawBolt(bolt.x1, bolt.y1, bolt.x2, bolt.y2, 70, 5, bolt.col);
-    ctx.restore();
-    bolt.alpha -= .06;
-    if (bolt.alpha <= 0) bolt.active = false;
+  for (let i = bolts.length - 1; i >= 0; i--) {
+    const b = bolts[i];
+    if (b.active && b.alpha > 0) {
+      ctx.save(); ctx.globalAlpha = b.alpha * .75;
+      drawBolt(b.x1, b.y1, b.x2, b.y2, 80, 6, b.col);
+      ctx.restore();
+      b.alpha -= .055;
+      if (b.alpha <= 0) bolts.splice(i, 1);
+    }
   }
   requestAnimationFrame(frame);
 }
